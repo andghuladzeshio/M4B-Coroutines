@@ -15,7 +15,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class NetworkExecutor<T : Any> internal constructor(parentJob: Job) {
     private val executorScope = CoroutineScope(Dispatchers.IO + SupervisorJob(parentJob))
 
-    private var onResult: ((Result<T>) -> Unit)? = null
+    private var onResult: (suspend (Result<T>) -> Unit)? = null
     private var executeBlock: (suspend CoroutineScope.() -> T)? = null
     private var loadingBlock: (() -> Unit)? = null
     private var onSuccessBlock: ((T) -> Unit)? = null
@@ -73,7 +73,7 @@ class NetworkExecutor<T : Any> internal constructor(parentJob: Job) {
         onFinishBlock = block
     }
 
-    fun onResult(block: (Result<T>) -> Unit) {
+    fun onResult(block: suspend (Result<T>) -> Unit) {
         onResult = block
     }
 

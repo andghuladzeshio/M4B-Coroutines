@@ -2,6 +2,7 @@ package com.example.testproj
 
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
@@ -32,4 +33,16 @@ fun <T> Flow<T>.handleRequestedError(liveData: MutableLiveData<RequestedResult<T
 
 fun <T> Flow<T>.handleRequestedResult(liveData: MutableLiveData<RequestedResult<T>>, requestCode: RequestCode) = this.onEach { result ->
     liveData.value = RequestedResult.Success(result, requestCode)
+}
+
+fun <T> Flow<T>.handleLoading(flow: FlowCollector<Result<T>>) = this.onStart {
+    flow.emit(Result.Loading)
+}
+
+fun <T> Flow<T>.handleError(flow: FlowCollector<Result<T>>) = this.catch { error ->
+    flow.emit(Result.Error(error))
+}
+
+fun <T> Flow<T>.handleResult(flow: FlowCollector<Result<T>>) = this.onEach { result ->
+    flow.emit(Result.Success(result))
 }

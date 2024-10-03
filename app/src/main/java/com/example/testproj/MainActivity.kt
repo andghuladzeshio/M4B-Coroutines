@@ -8,6 +8,11 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
@@ -18,12 +23,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
-//        findViewById<Button>(R.id.helloWorldButton).setOnClickListener {
-//            mainViewModel.onStop()
-//        }
-
-        mainViewModel.dataLiveData.observe(this) {
-            Log.d("logkata", it.toString())
+        findViewById<Button>(R.id.helloWorldButton).setOnClickListener {
+            mainViewModel.onRefresh()
         }
+
+        mainViewModel.dataFlow.onEach {
+            Log.d("logkata", it.toString())
+        }.launchIn(lifecycleScope)
     }
 }
